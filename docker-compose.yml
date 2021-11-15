@@ -1,0 +1,56 @@
+version: "3.9"
+
+networks:
+  prod-network:
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.7.28-management
+    container_name: rabbitmq
+    volumes:
+      - ./etc/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./etc/rabbitmq/logs/:/var/log/rabbitmq/
+    # environment:
+    #   RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-secret_cookie}
+    #   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-admin}
+    #   RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-admin}
+    ports:
+      - 5672:5672 #amqp
+      - 15672:15672 #http
+      - 15692:15692 #prometheus
+
+  db:
+    image: mysql:5.7
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "yt_node_admin"
+      MYSQL_PASSWORD: "root"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  mongodb:
+    image: mongo:4.1-xenial
+    container_name: mongodb
+    restart: unless-stopped
+    networks:
+      - prod-network
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: challenge
+    command: --auth
+
+    ports:
+      - 27017:27017
+
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume-prod:/data/db
+
+volumes:
+  db_data: {}
