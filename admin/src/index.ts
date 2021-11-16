@@ -13,6 +13,14 @@ createConnection().then((db) => {
         throw error1;
       }
 
+      channel.assertQueue("product_created_staging");
+      channel.assertQueue("product_updated_staging");
+      channel.assertQueue("product_deleted_staging");
+
+      channel.assertQueue("product_created");
+      channel.assertQueue("product_updated");
+      channel.assertQueue("product_deleted");
+
       console.log("Listening to port: 8000");
 
       const backend = new App(channel, db);

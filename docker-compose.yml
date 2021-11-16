@@ -8,8 +8,8 @@ services:
     image: rabbitmq:3.7.28-management
     container_name: rabbitmq
     volumes:
-      - ./etc/rabbitmq/data/:/var/lib/rabbitmq/
-      - ./etc/rabbitmq/logs/:/var/log/rabbitmq/
+      - ./queue/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./queue/rabbitmq/logs/:/var/log/rabbitmq/
     # environment:
     #   RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-secret_cookie}
     #   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-admin}
