@@ -1,0 +1,17 @@
+{
+  "name": "node-microservices",
+  "version": "1.0.0",
+  "description": "Software development",
+  "main": "index.js",
+  "scripts": {
+    "initialize:db": "docker-compose up -d",
+    "account:db": "docker exec mongodb bash -c 'mongo -u root -p root /docker-entrypoint-initdb.d/init-mongo.js'",
+    "build": "cd admin && npm run build && cd ../main && npm run build && cd ../staging && npm run build",
+    "production": "NODE_ENV=prod node ./dist/index.js",
+    "dependencies": "cd admin && npm i && cd ../main && npm i && cd ../staging && npm i"
+  },
+  "author": "Edgar Castillo Vega",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

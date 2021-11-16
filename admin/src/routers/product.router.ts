@@ -33,11 +33,13 @@ export default class ProductRotuerClass {
       const result = await this.productRepository.save(product);
       this.channel.sendToQueue(
         "product_created_staging",
-        Buffer.from(JSON.stringify(result))
+        Buffer.from(JSON.stringify(result)),
+        { persistent: true }
       );
       this.channel.sendToQueue(
         "product_created",
-        Buffer.from(JSON.stringify(result))
+        Buffer.from(JSON.stringify(result)),
+        { persistent: true }
       );
       return res.send(result);
     });
@@ -46,6 +48,10 @@ export default class ProductRotuerClass {
       "/api/products/:id",
       async (req: Request, res: Response) => {
         const product = await this.productRepository.findOne(req.params.id);
+
+        if (!product)
+          return res.status(404).send({ message: "Product not found" });
+
         return res.send(product);
       }
     );
@@ -60,11 +66,13 @@ export default class ProductRotuerClass {
         const result = await this.productRepository.save(product);
         this.channel.sendToQueue(
           "product_updated_staging",
-          Buffer.from(JSON.stringify(result))
+          Buffer.from(JSON.stringify(result)),
+          { persistent: true }
         );
         this.channel.sendToQueue(
           "product_updated",
-          Buffer.from(JSON.stringify(result))
+          Buffer.from(JSON.stringify(result)),
+          { persistent: true }
         );
         return res.send(result);
       }
@@ -76,9 +84,14 @@ export default class ProductRotuerClass {
         const result = await this.productRepository.delete(req.params.id);
         this.channel.sendToQueue(
           "product_deleted_staging",
-          Buffer.from(req.params.id)
+          Buffer.from(req.params.id),
+          { persistent: true }
         );
-        this.channel.sendToQueue("product_deleted", Buffer.from(req.params.id));
+        this.channel.sendToQueue(
+          "product_deleted",
+          Buffer.from(req.params.id),
+          { persistent: true }
+        );
         return res.send(result);
       }
     );
